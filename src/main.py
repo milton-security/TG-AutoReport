@@ -57,7 +57,7 @@ async def cmd_report(client, message):
     print("💁‍♂️ Рекомендується відправляти не більше 30-40 скарг в годину")
     await client.send_message("me", "💁‍♂️ Рекомендується відправляти не більше 30-40 скарг в годину")
 
-    with open(Path('separ_channels.txt')) as file:
+    with open(Path('ban_channels.txt')) as file:
         ids = list(map(str.strip, file.readlines()))
 
     length = len(ids)
