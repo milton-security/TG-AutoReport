@@ -2,6 +2,7 @@
 
 import asyncio
 import os
+import random
 import uuid
 from pathlib import Path
 
@@ -18,6 +19,8 @@ env.read_env()  # read .env file, if it exists
 api_id = env.int('API_ID')
 api_hash = env.str('API_HASH')
 session_path = Path('session')
+
+MAX_REPORT_AMOUNT = 30  # Максимальна кількість репортів за 1 запуск програми
 
 print(f"ВЕРСІЯ: {__version__}")
 
@@ -39,7 +42,7 @@ def on_start():
         with Client(uuid.uuid4().hex, api_id, api_hash) as tmp_app:
             with open(session_path, 'w') as file:
                 session_string = tmp_app.export_session_string()
-                file.write(session_string)
+                file.write(session_string)  # noqa
 
         print("Програма сконфігурована")
         print("Перезапустіть програму щоб почати користування")
@@ -60,9 +63,11 @@ async def cmd_report(client, message):
     with open(Path('ban_channels.txt')) as file:
         ids = list(map(str.strip, file.readlines()))
 
-    length = len(ids)
+    random.shuffle(ids)  # Перемішуємо список каналів
+    limited_ids = ids[:MAX_REPORT_AMOUNT]  # Беремо перші 30 каналів із перемішаного списку
+    length = len(limited_ids)
 
-    for _, i in enumerate(ids, start=1):
+    for _, i in enumerate(limited_ids, start=1):
         try:
             peer: InputPeerChannel = await client.resolve_peer(i)
             response = await client.send(data=ReportPeer(peer=peer, reason=InputReportReasonSpam(), message="Тероризм"))
