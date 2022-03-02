@@ -9,7 +9,7 @@ from pathlib import Path
 from environs import Env
 from pyrogram import Client, filters
 from pyrogram.raw.functions.account import ReportPeer
-from pyrogram.raw.types import InputPeerChannel, InputReportReasonSpam
+from pyrogram.raw.types import InputPeerChannel, InputReportReasonOther
 
 from __version__ import __version__
 
@@ -70,7 +70,8 @@ async def cmd_report(client, message):
     for _, i in enumerate(limited_ids, start=1):
         try:
             peer: InputPeerChannel = await client.resolve_peer(i)
-            response = await client.send(data=ReportPeer(peer=peer, reason=InputReportReasonSpam(), message="Тероризм"))
+            response = await client.send(
+                data=ReportPeer(peer=peer, reason=InputReportReasonOther(), message="Тероризм"))
             print(f"[{_}/{length}] Канал {i} отримав скаргу, {response}")
             await client.send_message("me", f"[{_}/{length}] Канал {i} отримав скаргу, {response}")
 
